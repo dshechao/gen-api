@@ -23,7 +23,10 @@ const Template = `<!DOCTYPE html>
       outline: 1px solid #ccc;
       padding: 5px; margin: 5px;
     }
-
+	td{
+        word-wrap: break-word;
+        max-width: 115px;
+    }
     .string { color: green; }
     .number { color: darkorange; }
     .boolean { color: blue; }

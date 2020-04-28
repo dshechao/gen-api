@@ -12,11 +12,11 @@ import (
 
 func Document() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		apiCall := models.ApiCall{}
+		middleware.Before(&apiCall, c.Request)
 		if !gen.IsOn() {
 			return
 		}
-		apiCall := models.ApiCall{}
-		middleware.Before(&apiCall, c.Request)
 		c.Next()
 		if gen.IsStatusCodeValid(c.Writer.Status()) {
 			apiCall.MethodType = c.Request.Method
