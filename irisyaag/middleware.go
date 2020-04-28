@@ -13,16 +13,15 @@ import (
 // New returns a new gen iris-compatible handler which is responsible to generate the rest API.
 func New() context.Handler {
 	return func(ctx context.Context) {
+		// prepare the middleware.
+		apiCall := &models.ApiCall{}
+		middleware.Before(apiCall, ctx.Request())
+
 		if !gen.IsOn() {
 			// execute the main handler and exit if gen is off.
 			ctx.Next()
 			return
 		}
-
-		// prepare the middleware.
-		apiCall := &models.ApiCall{}
-		middleware.Before(apiCall, ctx.Request())
-
 		// start the recorder instead of raw response writer,
 		// response writer is changed for that handler now.
 		ctx.Record()

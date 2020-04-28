@@ -13,7 +13,6 @@ func Yaag() echo.MiddlewareFunc {
 			if !gen.IsOn() {
 				return next(c)
 			}
-
 			apiCall := models.ApiCall{}
 			writer := middleware.NewResponseRecorder(c.Response().Writer)
 			c.Response().Writer = writer
