@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/dshechao/gen-api/gen"
@@ -85,7 +86,7 @@ func Before(apiCall *models.ApiCall, req *http.Request) {
 		case "application/json":
 			log.Println("Reading body")
 			r := *ReadBody(req)
-			r1, r2 := handlerParamComment(req, r)
+			r1, r2 := HandlerParamComment(req, r)
 			apiCall.RequestBody = r1
 			apiCall.RequestBodyComment = r2
 		default:
@@ -94,7 +95,7 @@ func Before(apiCall *models.ApiCall, req *http.Request) {
 			} else {
 				log.Println("Reading body")
 				r := *ReadBody(req)
-				r1, r2 := handlerParamComment(req, r)
+				r1, r2 := HandlerParamComment(req, r)
 				apiCall.RequestBody = r1
 				apiCall.RequestBodyComment = r2
 			}
@@ -242,19 +243,47 @@ func drainBody(b io.ReadCloser) (r1, r2 io.ReadCloser, err error) {
 }
 
 //解析参数中的备注
-func handlerParamComment(req *http.Request, body string) (string, map[string]string) {
+func HandlerParamComment(req *http.Request, body string) (string, map[string]string) {
 	var (
 		e = make(map[string]string)
-		f = make(map[string]string)
+		f = make(map[string]interface{})
+		h = make(map[string]interface{})
+		m string
+		n interface{}
 	)
-	_ = json.Unmarshal([]byte(body), &f)
-	for q, w := range f {
-		slice := strings.Split(w, "`")
+	_ = json.Unmarshal([]byte(body), &h)
+	for q, w := range h {
+		switch w.(type) {
+		case string:
+			m = w.(string)
+		default:
+			f[q] = w
+			continue
+		}
+		slice := strings.Split(m, "`")
 		if len(slice) > 1 {
+			sliceComment := strings.Split(slice[1], ":")
+			//分割备注里面的参数属性
+			if len(sliceComment) > 1 {
+				//按照备注进行类型转换
+				switch sliceComment[1] {
+				case "int":
+					n, _ = strconv.Atoi(slice[0])
+				case "float":
+					n, _ = strconv.ParseFloat(slice[0], 64)
+				default:
+					n = slice[0]
+				}
+			} else {
+				n = slice[0]
+			}
+			//记录备注
 			e[q] = slice[1]
-			f[q] = slice[0]
+			//重新对参数赋值
+			f[q] = n
 		}
 	}
+
 	g, _ := json.Marshal(f)
 	c := ioutil.NopCloser(bytes.NewReader(g))
 	req.Body = c

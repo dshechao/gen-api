@@ -10,8 +10,23 @@ import (
 )
 
 func TestIrisGin(t *testing.T) {
+
+	cc := iris.Map{
+		"a":        "123",
+		"b":        456.12,
+		"c":        "dddd",
+		"d":        "ewrwerewqr",
+		"username": "这是一个测试案例",
+		"name":     123,
+	}
 	comment := iris.Map{
-		"a": "123`测试参数收代理费`", "b": "456`不要的参数`", "c": "dddd`滴啊点那个`", "d": "ewrwerewqr`最后一个参数`", "username": "这是一个测试案例`用户名`",
+		"a":        "123`测试参数收代理费:int`",
+		"b":        "456.12`不要的参数:float`",
+		"c":        "dddd`滴啊点那个`",
+		"d":        "ewrwerewqr`最后一个参数`",
+		"username": "这是一个测试案例`用户名`",
+		"name":     123,
+		"coment":   cc,
 	}
 	app := newApp()
 	e := httptest.New(t, app)
@@ -20,16 +35,13 @@ func TestIrisGin(t *testing.T) {
 
 	e.POST("/hello").WithHeader("CurrentApiName", "测试内容接口222--测试").
 		WithHeader("CurrentApiComment", "备注内容").
+		WithHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTU3LCJwaG9uZSI6IjE4OTEyMzQ1Njc4IiwiZW5hYmxlIjoxLCJleHAiOjE1ODkzNTkyOTQsImlzcyI6ImJzdC1jb21tdW5pdHktaWp3dCJ9.m6z1rt_vYIxSlYwMMQBnTpjWNjjhzqiXBT7yxp_E7tc").
 		WithFormField("username999", "kataras").Expect().Status(httptest.StatusOK)
 
 	e.POST("/reqbody").WithHeader("CurrentApiName", "测试内容接口333--测试").
 		WithHeader("CurrentApiComment", "ooo").
 		WithJSON(comment).
-		//WithJSON(myModel{Username: "kataras`8989好`",Gender: "lsdjfls;adj`大连市附近的数量`"}).
-		//WithJSON(myModel{Username: "kataras",Gender: "lsdjfls;adj"}).
 		Expect().Status(httptest.StatusOK)
-	//Body().Equal("kataras")
-
 	// give time to "gen" to generate the doc, 5 seconds are more than enough
 	time.Sleep(5 * time.Second)
 }
