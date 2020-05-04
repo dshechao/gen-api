@@ -253,6 +253,7 @@ func HandlerParamComment(req *http.Request, body string) (string, map[string]str
 	)
 	_ = json.Unmarshal([]byte(body), &h)
 	for q, w := range h {
+		//对参数进行类型转换
 		switch w.(type) {
 		case string:
 			m = w.(string)
@@ -272,18 +273,22 @@ func HandlerParamComment(req *http.Request, body string) (string, map[string]str
 				case "float":
 					n, _ = strconv.ParseFloat(slice[0], 64)
 				default:
+					//未定义处理方式,不做处理
 					n = slice[0]
 				}
 			} else {
+				//没有类型,不做处理
 				n = slice[0]
 			}
 			//记录备注
 			e[q] = slice[1]
 			//重新对参数赋值
 			f[q] = n
+		} else {
+			//没有备注直接赋值
+			f[q] = w
 		}
 	}
-
 	g, _ := json.Marshal(f)
 	c := ioutil.NopCloser(bytes.NewReader(g))
 	req.Body = c
