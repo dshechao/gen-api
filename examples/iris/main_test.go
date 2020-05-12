@@ -20,9 +20,6 @@ func TestIrisGin(t *testing.T) {
 		"name":     123,
 	}
 	comment := iris.Map{
-		//"a":        "123`测试参数收代理费:int`",
-		//"b":        "456.12`不要的参数:float`",
-		//"c":        "dddd`滴啊点那个`",
 		"d":        "ewrwerewqr",
 		"username": "这是一个测试案例`用户名`",
 		"name":     123,

@@ -1,4 +1,4 @@
-package martiniyaag
+package martinigen
 
 import (
 	"github.com/dshechao/gen-api/gen"

@@ -1,4 +1,4 @@
-package irisyaag
+package irisgen
 
 import (
 	"bytes"

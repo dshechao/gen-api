@@ -5,7 +5,7 @@ import (
 	"github.com/kataras/iris/v12"
 
 	"github.com/dshechao/gen-api/gen"
-	"github.com/dshechao/gen-api/irisyaag"
+	"github.com/dshechao/gen-api/irisgen"
 )
 
 type myXML struct {
@@ -25,11 +25,11 @@ func newApp() *iris.Application {
 	gen.Init(&gen.Config{ // <- IMPORTANT, init the middleware.
 		On:       true,
 		DocTitle: "Iris",
-		DocPath:  "apidoc.html",
+		DocPath:  "doc/index.html",
 		BaseUrls: map[string]string{"Production": "", "Staging": ""},
 	})
 
-	app.Use(irisyaag.New()) // <- IMPORTANT, register the middleware.
+	app.Use(irisgen.New()) // <- IMPORTANT, register the middleware.
 
 	app.Get("/json", func(ctx iris.Context) {
 		ctx.JSON(iris.Map{"result": "Hello World!"})

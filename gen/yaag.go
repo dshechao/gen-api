@@ -5,13 +5,13 @@ package gen
 
 import (
 	"encoding/json"
+	"github.com/dshechao/gen-api/gen/models"
 	"html/template"
 	"io"
 	"log"
 	"os"
 	"path/filepath"
-
-	"github.com/dshechao/gen-api/gen/models"
+	"strings"
 )
 
 var count int
@@ -30,7 +30,7 @@ func Init(conf *Config) {
 	if conf.DocPath == "" {
 		conf.DocPath = "apidoc.html"
 	}
-
+	pathExistsOrCreate(conf.DocPath)
 	filePath, err := filepath.Abs(conf.DocPath + ".json")
 	dataFile, err := os.Open(filePath)
 	defer dataFile.Close()
@@ -38,6 +38,21 @@ func Init(conf *Config) {
 		json.NewDecoder(io.Reader(dataFile)).Decode(spec)
 		generateHtml()
 	}
+}
+
+//检查文件是否存在,不存在则创建文件
+func pathExistsOrCreate(path string) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return
+	}
+	if os.IsNotExist(err) {
+		p := strings.Split(path, "/")
+		path = strings.Join(p[:len(p)-1], "/")
+		_ = os.MkdirAll(path, os.ModePerm)
+		return
+	}
+	return
 }
 
 func add(x, y int) int {
